@@ -16,13 +16,13 @@ import {
 
 import Faq from '../components/Faq';
 import Feature from '../components/Feature';
-import Logo from '../assets/AVORLY.png';
+import Logo from '../assets/pp.png';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function CallToActionWithVideo() {
   const navigate = useNavigate();
   return (
-    <Box bgGradient='linear(to-b, white, blue.100, blue.200)'>
+    <Box >
       <Flex
         direction={{ base: 'column', md: 'row', lg: 'row' }}
         pb="4rem"
@@ -41,11 +41,11 @@ export default function CallToActionWithVideo() {
           <Heading
             textAlign={'center'}
             fontWeight={600}
-            fontSize="2rem"
+            fontSize="3rem"
             color="#0077b6"
             pb='2rem'
           >
-            A crypto-based gig marketplace for the UCLA community!
+            Parcel Pass
           </Heading>
 
           <Stack mt="1rem">

@@ -39,8 +39,7 @@ import FavorCard from '../components/FavorCard';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Fonts from '../fonts'
-const DEMANDS_URL = process.env.REACT_APP_URL + '/favors';
-const DEMANDS_CATEG_URL = process.env.REACT_APP_URL + '/favors/byCategory';
+const REQUESTS_URL = process.env.REACT_APP_URL + '/parcels';
 const USER_URL = process.env.REACT_APP_URL + '/users';
 
 export default function DemandPage() {
@@ -49,12 +48,10 @@ export default function DemandPage() {
   let [user, setUser] = useState({});
   let [category, setCategory] = useState('All');
 
-  const getFavors = async () => {
+  const getParcels = async () => {
     let token = localStorage.getItem('auth-token');
-    if (category === 'All') {
-      console.log('All');
-      try {
-        const json = await axios.get(DEMANDS_URL, {
+    try {
+        const json = await axios.get(REQUESTS_URL, {
           headers: { 'auth-token':  token},
         });
         // console.log(json.data);
@@ -62,19 +59,7 @@ export default function DemandPage() {
       } catch (err) {
         console.error(err.response);
       }
-    } else {
-      try {
-        const json = await axios.get(DEMANDS_CATEG_URL, {
-          params: { category: category },
-          headers: { 'auth-token': localStorage.getItem('auth-token') },
-        });
-        // console.log(json.data);
-        setCards(json.data);
-      } catch (err) {
-        console.error(err.response);
-      }
-    }
-  };
+    };
 
   const getUser = async () => {
     try {
@@ -93,7 +78,7 @@ export default function DemandPage() {
   }, []);
 
   useEffect(() => {
-    getFavors();
+    getParcels();
   }, [category]);
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -115,10 +100,10 @@ export default function DemandPage() {
       <Tabs size="lg" isFitted variant="enclosed">
         <TabList>
           <Tab background='gray.100' borderColor='gray.200'>
-            Get a favor
+            Packages Available
           </Tab>
           <Tab onClick={onOpen}>
-            Give a favor
+            Transporters Available
           </Tab>
         </TabList>
       </Tabs>
@@ -129,7 +114,7 @@ export default function DemandPage() {
           <ModalHeader>Feature Under Development</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            Have something to Offer? Favorly will soon add the feature that allows you to offer gigs.
+            ParcelPass will soon allow interested drivers to post their routes which can be seen by people who want to send stuff
           </ModalBody>
 
           <ModalFooter>
@@ -140,7 +125,7 @@ export default function DemandPage() {
         </ModalContent>
       </Modal>
 
-      <Accordion allowToggle>
+      {/* <Accordion allowToggle>
         <AccordionItem>
           <h2>
             <AccordionButton>
@@ -171,48 +156,39 @@ export default function DemandPage() {
                 mx="1rem"
                 mt="0.5rem"
                 onClick={() => {
-                  setCategory('Coffee');
+                  setCategory('High');
                 }}
               >
-                Coffee
+                High
               </Button>
               <Button
                 mx="1rem"
                 mt="0.5rem"
                 onClick={() => {
-                  setCategory('Food');
+                  setCategory('Medium');
                 }}
               >
-                Food
+                Medium
               </Button>
               <Button
                 mx="1rem"
                 mt="0.5rem"
                 onClick={() => {
-                  setCategory('General Help');
+                  setCategory('Low');
                 }}
               >
-                General Help
-              </Button>
-              <Button
-                mx="1rem"
-                mt="0.5rem"
-                onClick={() => {
-                  setCategory('Grocery');
-                }}
-              >
-                Grocery
+                Low
               </Button>
             </Flex>
           </AccordionPanel>
         </AccordionItem>
-      </Accordion>
+      </Accordion> */}
 
       <Box mb="1rem">
         {cards.map(card => (
           <FavorCard
             onClick={async => {
-              navigate('/favor-description', {
+              navigate('/parcel-description', {
                 state: {
                   favorDetails: card,
                 },
@@ -227,3 +203,4 @@ export default function DemandPage() {
     </Flex>
   );
 }
+

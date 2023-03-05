@@ -30,18 +30,19 @@ import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
-const FAVOR_URL = process.env.REACT_APP_URL + '/favors';
-const UPDATE_COINS_URL = process.env.REACT_APP_URL + '/users/updateCoins';
+const PARCEL_URL = process.env.REACT_APP_URL + '/parcels';
+const UPDATE_BALANCE = process.env.REACT_APP_URL + '/users/updateBalance';
 
 export default function Form() {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const [expiry, setExpiry] = React.useState('60');
-  const [title, setTitle] = useState('');
-  const [coins, setCoins] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('Coffee');
+  const [expiry, setExpiry] = React.useState('100');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [tip, setTip] = useState('');
+  const [content, setContent] = useState('');
+  const [urgency, setUrgency] = useState('Low');
   const [errMsg, setErrMsg] = useState('');
   const [success, setSuccess] = useState(false);
 
@@ -60,28 +61,26 @@ export default function Form() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      let favorBody = {
-        title: title,
-        description: description,
-        // expiry: expiry,
-        category: category,
-        favorCoins: coins,
+      let parcelBody = {
+        startLocation: to,
+        endLocation: from,
+        content: content,
       };
-      const response = await axios.post(FAVOR_URL, favorBody, {
+      const response = await axios.post(PARCEL_URL, parcelBody, {
         headers: { 'auth-token': localStorage.getItem('auth-token') },
       });
       console.log(response);
       setSuccess(true);
-      const updateResponse = await axios.get(UPDATE_COINS_URL, {
+      const updateResponse = await axios.get(UPDATE_BALANCE, {
         params: {
           type: 'subtract',
-          favorCoins: coins,
-          userId: response.data.favoreeId,
+          balance: 2,
+          userId: response.data.userId,
         },
         headers: { 'auth-token': localStorage.getItem('auth-token') },
       });
       toast({
-        title: 'Favor created successfully!',
+        title: 'Request recorded successfully!',
         status: 'success',
         position: 'top',
         duration: 1000,
@@ -111,7 +110,7 @@ export default function Form() {
             fontWeight={'1000'}
             mb="1rem"
           >
-            Request a Favor
+            Request a Delivery
             <Text display={'inline'} ml="0.5rem" color="blue.600" onClick={() => navigate('/faq')}>
               ⓘ
             </Text>
@@ -119,103 +118,87 @@ export default function Form() {
         </Stack>
         <form onSubmit={handleSubmit}>
           <Stack spacing={4}>
-            <FormControl id="Title">
-              <FormLabel>Title</FormLabel>
+            <FormControl id=" To">
+              <FormLabel>To</FormLabel>
               <Input
                 type="string"
                 rounded="2xl"
-                placeholder="Favor Title"
-                onChange={e => setTitle(e.target.value)}
-                value={title}
+                placeholder="Parcel Pickup Location"
+                onChange={e => setTo(e.target.value)}
+                value={to}
+              />
+            </FormControl>
+            <FormControl id="From">
+              <FormLabel>From</FormLabel>
+              <Input
+                type="string"
+                rounded="2xl"
+                placeholder="Parcel DropOff Location"
+                onChange={e => setFrom(e.target.value)}
+                value={from}
               />
             </FormControl>
 
-            <FormControl id="Description">
-              <FormLabel>Description</FormLabel>
+            <FormControl id="Parcel Contents">
+              <FormLabel>Parcel Contents</FormLabel>
               <Textarea
-                placeholder="Describe your favor here"
+                placeholder="Describe the contents of the Parcel"
                 minHeight="5.5rem"
                 rounded="2xl"
-                onChange={e => setDescription(e.target.value)}
-                value={description}
+                onChange={e => setContent(e.target.value)}
+                value={content}
               />
             </FormControl>
 
-            <FormControl id="Favor Coins">
-              <FormLabel>Favor Coins</FormLabel>
+            <FormControl id="Tip">
+              <FormLabel>Additional Tip</FormLabel>
               <Input
                 type="number"
                 rounded="2xl"
-                placeholder="3"
-                onChange={e => setCoins(e.target.value)}
-                value={coins}
+                placeholder="$2"
+                onChange={e => setTip(e.target.value)}
+                value={tip}
               />
               <Text color="gray">
-                *Each coin is roughly equal to 15 minutes.
+                *This is additional to the basic cost.
               </Text>
             </FormControl>
 
-            <FormControl id="Category">
-              <FormLabel>Category</FormLabel>
+            <FormControl id="Urgency">
+              <FormLabel>Urgency</FormLabel>
               <Box rounded={'2xl'} bg={'transparent'} boxShadow={'lg'} p={8}>
-                <RadioGroup value={category} onChange={val => setCategory(val)}>
+                <RadioGroup value={urgency} onChange={val => setUrgency(val)}>
                   <Stack spacing={4}>
-                    <Radio value="Coffee">
-                      <Icon
-                        as={SiCoffeescript}
-                        w={7}
-                        h={7}
-                        color="blue.600"
-                        verticalAlign="-8px"
-                      />{' '}
-                      Coffee
+                    <Radio value="High">
+                      {' '}
+                      High
                     </Radio>
                     <Divider />
-                    <Radio value="Food">
-                      <Icon
-                        as={FaHamburger}
-                        w={7}
-                        h={7}
-                        color="blue.600"
-                        verticalAlign="-8px"
-                      />{' '}
-                      Food
+                    <Radio value="Medium">
+                      {' '}
+                      Medium
                     </Radio>
                     <Divider />
-                    <Radio value="General Help">
-                      <Icon
-                        as={FaHandsHelping}
-                        w={7}
-                        h={7}
-                        color="blue.600"
-                        verticalAlign="-8px"
-                      />{' '}
-                      General Help
-                    </Radio>
-                    <Divider />
-                    <Radio value="Grocery">
-                      <Icon
-                        as={FaStore}
-                        w={7}
-                        h={7}
-                        color="blue.600"
-                        verticalAlign="-8px"
-                      />{' '}
-                      Grocery
+                    <Radio value="Low">
+                      {' '}
+                      Low
                     </Radio>
                   </Stack>
                 </RadioGroup>
               </Box>
+              <Text color="gray">
+                *Price will vary according to urgency.
+              </Text>
             </FormControl>
 
             <FormControl id="Expiry">
-              <Text>Your Favor request will expire in {expiry} minutes.</Text>
+              <Text>Your Request will expire in {expiry} minutes.</Text>
               <Input
                 type={'number'}
                 mt="1rem"
                 onChange={e => setExpiry(e.target.value)}
                 value={expiry}
-                placeholder="60"
+                placeholder="100"
                 size="sm"
                 rounded="2xl"
               />
@@ -231,7 +214,7 @@ export default function Form() {
                 bg: 'blue.500',
               }}
             >
-              Post Favor
+              Post Request
             </Button>
             <Text textAlign={'center'} color="red.400">
               {errMsg}
